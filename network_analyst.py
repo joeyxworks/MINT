@@ -7,6 +7,7 @@ import os
 import time
 import struct
 
+# The menu to select which module to run.
 def main_menu():
     while True:
         print("Network Analyst Tool")
@@ -127,6 +128,7 @@ def get_module_inputs(module_name):
 results = []
 results_lock = threading.Lock()
 
+# Worker function for threads: pulls tasks from the queue and attempts TCP connection
 def scan_worker(task_queue):
     """Worker thread: pulls (ip, port) tasks and attempts TCP connection."""
     while True:
@@ -146,6 +148,7 @@ def scan_worker(task_queue):
         finally:
             task_queue.task_done()
 
+# To generate a list of IP addresses from start to end
 def get_ip_range(start_ip, end_ip):
     """Returns a list of IP address strings between start_ip and end_ip (inclusive)."""
     start = int(ipaddress.IPv4Address(start_ip))
@@ -154,11 +157,10 @@ def get_ip_range(start_ip, end_ip):
         raise ValueError("Starting IP must be less than or equal to ending IP.")
     return [str(ipaddress.IPv4Address(ip)) for ip in range(start, end + 1)]
 
-
+# Main function to manage the threaded port scanning process
 def threaded_port_scan_main():
-    """Main entry point for the port scanner module."""
 
-    print("\n--- Port Scanner ---")
+    print("\n--- Port Scanner ---\n")
 
     # Collect inputs
     # inputs = prompt_inputs()
@@ -265,8 +267,11 @@ def print_statistics(target, sent, received, rtt_list):
         print("Approximate round trip times in milli-seconds:")
         print(f"    Minimum = {min_rtt}ms, Maximum = {max_rtt}ms, Average = {avg_rtt}ms")
 
+# the main function to manage the UDP ping process
 def udp_ping_main():
-    # the main function to manage the UDP ping process
+
+    print("\n--- UDP Ping ---\n")
+
     # get user inputs
     inputs = get_module_inputs("udp_ping")
     if inputs is None:
@@ -355,9 +360,12 @@ def trace_single_hop(target, ttl):
     finally:
         sock.close()
 
+# Main manager function for the traceroute.
 def icmp_traceroute_main():
-    # Main manager function for the traceroute.
-    print("\nPlease run this program with Administrator/Root privileges to perform traceroute.\n")
+
+    print("\n--- ICMP Traceroute ---\n")
+
+    print("Please run this program with Administrator/Root privileges to perform traceroute.\n")
     inputs = get_module_inputs("traceroute")
     if inputs is None:
         return
