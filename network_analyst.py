@@ -150,7 +150,6 @@ def scan_worker(task_queue):
 
 # To generate a list of IP addresses from start to end
 def get_ip_range(start_ip, end_ip):
-    """Returns a list of IP address strings between start_ip and end_ip (inclusive)."""
     start = int(ipaddress.IPv4Address(start_ip))
     end = int(ipaddress.IPv4Address(end_ip))
     if start > end:
@@ -235,6 +234,7 @@ def send_single_ping(target, port, data):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(1.0)
     
+    # for UDP, we just send the packet and wait for any response (like ICMP Port Unreachable)
     start_time = time.perf_counter()
     
     try:
@@ -304,7 +304,7 @@ def udp_ping_main():
 
 ####### ICMP Traceroute Module #######
 def calculate_checksum(data):
-    """Calculates the necessary checksum for the ICMP header."""
+    # Calculate the checksum of the given data (ICMP header + payload).
     if len(data) % 2 != 0:
         data += b'\0'
     res = sum(struct.unpack("!%dH" % (len(data) // 2), data))
@@ -313,7 +313,7 @@ def calculate_checksum(data):
     return (~res) & 0xffff
 
 def create_icmp_request(seq_num):
-    """Builds a raw ICMP Echo Request packet."""
+    # Build an ICMP Echo Request packet with the given sequence number. The identifier is fixed at 12345 for simplicity.
     # ICMP Type 8 is Echo Request, Code 0. 
     # struct.pack format: B (1 byte), B (1 byte), H (2 bytes), H (2 bytes), H (2 bytes)
     header = struct.pack('!BBHHH', 8, 0, 0, 12345, seq_num)
@@ -326,7 +326,7 @@ def create_icmp_request(seq_num):
     return header + data
 
 def trace_single_hop(target, ttl):
-    """Sends an ICMP packet with a specific TTL and waits for the router's reply."""
+    # Create a raw socket to send an ICMP Echo Request with the specified TTL. Wait for a response and return the router's IP, RTT, and ICMP type.
     # IMPORTANT: SOCK_RAW requires Administrator/Root privileges!
     # socket.IPPROTO_ICMP tells the OS we are manually building an ICMP packet.
     sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
