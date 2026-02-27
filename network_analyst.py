@@ -10,7 +10,7 @@ import struct
 # The menu to select which module to run.
 def main_menu():
     while True:
-        print("Network Analyst Tool")
+        print("\nNetwork Analyst Tool")
         print("1. Threaded Port Scanner")
         print("2. UDP Ping (Unthreaded)")
         print("3. ICMP Traceroute")
@@ -199,7 +199,7 @@ def threaded_port_scan_main():
     # Wait for all threads to complete but allow Ctrl+C
     try:
         while any(t.is_alive() for t in threads):
-            time.sleep(0.1)
+            time.sleep(1.5)
     except KeyboardInterrupt:
         print("\n[!] Scan interrupted by user. Exiting...")
         sys.exit(0)
@@ -213,7 +213,7 @@ def threaded_port_scan_main():
         print("No open ports found.")
     else:
         for ip, port in results:
-            print(f"IP Address: {ip}, Port {port} is open\n\n")
+            print(f"IP Address: {ip}, Port {port} is open.")
 
 
 ####### UDP Ping Module #######
